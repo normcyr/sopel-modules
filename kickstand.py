@@ -15,14 +15,16 @@ def kickstand(bot, trigger):
         comicurl = comicbaseaddress + today + '/'
 # If yes, print the link
 #        print('The address is ' + comicurl)
+	bot.say('Nouveau Kickstand Comics:' + ' | ' + comicurl)
 
+# As of 2017-01-11, there is no title associated with the comic strip so I skipped that part.
 # And print the title of the comic
-        html = BeautifulSoup(request.text, 'html.parser')
-        fulltitlenodate = html.title.text[11:]
-        where_dash = fulltitlenodate.find(' - ')
-        if where_dash == -1:
-            bot.say(fulltitlenodate + ' ' + comicurl)
-        bot.say('Nouveau Kickstand Comics: ' + fulltitlenodate[:where_dash] + ' | ' + comicurl)
+#        html = BeautifulSoup(request.text, 'html.parser')
+#        fulltitlenodate = html.title.text[11:]
+#        where_dash = fulltitlenodate.find(' - ')
+#        if where_dash == -1:
+#            bot.say(fulltitlenodate + ' ' + comicurl)
+#        bot.say('Nouveau Kickstand Comics:' + fulltitlenodate[:where_dash] + ' | ' + comicurl)
 
 # If no, do nothing
     else:
