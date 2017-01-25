@@ -2,35 +2,43 @@ import sys
 import requests
 from bs4 import BeautifulSoup
 import mechanicalsoup as ms
-#import sopel.module
-#from sopel import web
+import sopel.module
+from sopel import web
 
-#@sopel.module.commands('babac')
-#def searchbabac(bot, trigger):
-    #bot.say('Je cherche une piece sur le site de Babac')
+@sopel.module.commands('babac')
 
-browser = ms.Browser()
+def search_babac(bot, trigger):
+#def search_babac():
 
-# Query
-print('Searching for:', end=' ')
-print(sys.argv[1])
-#query =
-query = sys.argv[1]
+    query = trigger.group(2)
+    if not query:
+        return bot.reply('.babac what?')
 
-# Search
-search = requests.get('http://cyclebabac.com/fr/', params='?s='+query)
-searchpage = search.text
-soupsearchpage = BeautifulSoup(searchpage, "html.parser")
-itemsfound = soupsearchpage.findAll(attrs={'class': 'itemTitle'})
+    # Intro text
+    bot.say('Searching in the Babac catalog for: %s' % query)
+    bot.say('Return the 10 first items.')
+    bot.say('#Babac | Item name' )
 
-# Output of search
-print('#Babac | Item name' )
-for itemname in itemsfound:
-    shortitemname = itemname.contents[1].string
-    for itemlink in itemname.find_all('a'):
-        #print(itemlink.get('href'))
-        itempage = requests.get(itemlink.get('href'))
-        itempagetext = itempage.text
-        soupitempagetext = BeautifulSoup(itempagetext, "html.parser")
-        skushort = str(soupitempagetext.find_all("span", attrs={"class": "sku"}))[34:40]
-    print(skushort + ' | ' + shortitemname)
+    # Query
+    browser = ms.Browser()
+
+    # Search
+    search = requests.get('http://cyclebabac.com/fr/', params='?s='+query)
+    searchpage = search.text
+    soupsearchpage = BeautifulSoup(searchpage, "html.parser")
+    itemsfound = soupsearchpage.findAll(attrs={'class': 'itemTitle'})
+
+    # Output of search
+    for itemname in itemsfound:
+        shortitemname = itemname.contents[1].string
+        for itemlink in itemname.find_all('a'):
+            #print(itemlink.get('href'))
+            itempage = requests.get(itemlink.get('href'))
+            itempagetext = itempage.text
+            soupitempagetext = BeautifulSoup(itempagetext, "html.parser")
+            skushort = str(soupitempagetext.find_all("span", attrs={"class": "sku"}))[34:40]
+        bot.say(skushort + ' | ' + shortitemname)
+    return
+
+#if __name__ == '__main__':
+    #search_babac()
