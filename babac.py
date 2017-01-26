@@ -23,7 +23,7 @@ def get_query(bot, trigger):
     return query
 
 def load_config():
-    with open('/home/norm/.sopel/modules/config.yml') as ymlfile:
+    with open('config.yml') as ymlfile:
         cfg = yaml.load(ymlfile)
 
     username = cfg['login']['username']
