@@ -15,7 +15,7 @@ def get_query(bot, trigger):
     #query = str(sys.argv[1])
     query = trigger.group(2)
     if not query:
-        return bot.reply('.babac what? Please specify your query. For example ".babac Training wheels"')
+        return bot.reply('.babac what? Please specify your query. For example ".babac wheel"')
         #return '.babac what? Please specify your query. For example ".babac Training wheels"'
     bot.say('Searching in the Babac catalog for: %s' % query)
     #print('Searching in the Babac catalog for: %s' % query)
@@ -88,7 +88,7 @@ def print_results(bot, br, itemsfound):
         #print('No product found :(')
 
 @commands('babac')
-@example('.babac training wheels')
+@example('.babac wheel')
 def babac(bot, trigger):
     query = get_query(bot, trigger)
     username, password = load_config()
