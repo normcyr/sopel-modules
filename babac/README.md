@@ -23,4 +23,27 @@
 
 ## Running the module
 
-*instructions to add*
+In a channel where the bot is present, enter the following command:
+
+```
+.babac training wheels
+```
+
+The output should looks like that:
+
+```
+> Searching in the Babac catalog for: training+wheels
+> Returning 3 items.
+> #Babac | Item name and price
+> 22-169 | Stabilizers & Trainers 16-24 | 20.00$
+> 22-155 | Wald Stabilizer 16 – 26″ | 40.00$
+> 22-150 | WALD Training Wheels | 35.00$
+```
+
+# Future features
+
+- Nicier formatting of the output
+- Everything running with Python3
+  * Replace mechanize for another module
+- Have links to product pages within the product numbers output
+- If there are more than 10 items found, return how many items found and include instructions to get the list of all items found
