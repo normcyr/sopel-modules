@@ -11,8 +11,7 @@ import yaml
 
 def get_query(bot, trigger):
     #query = str(sys.argv[1])
-    query = trigger.group(2)
-    query = '+'.join(query)
+    query = trigger.group(2).replace(' ', '+')
     if not query:
         return bot.reply('.babac what? Please specify your query. For example ".babac training wheels"')
         #return '.babac what? Please specify your query. For example ".babac training wheels"'
