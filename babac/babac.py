@@ -1,5 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+'''
+Search for an item in the Babac catalog
+Returns the first 10 items
+
+Things to do to configure the module:
+- Change the username and password in config.yml.example
+- Rename config.yml.example to config.yml
+- Specify the path to the config.yml file in load_config()
+'''
 
 from sopel.module import commands, example
 from sopel import web

@@ -1,8 +1,8 @@
 .gitignore
-config.yml
 helloworld.py
 search.py
-babac-test.py
-babac-incomplete.py
-babac-working.py
+babac/config.yml
+babac/babac-test.py
+babac/babac-incomplete.py
+babac/babac-working.py
 *.pyc
