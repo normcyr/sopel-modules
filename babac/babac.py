@@ -11,12 +11,14 @@ import yaml
 
 def get_query(bot, trigger):
     #query = str(sys.argv[1])
-    query = trigger.group(2).replace(' ', '+')
-    if not query:
+    query = trigger.group(2)
+    if query != None:
+        query = query.replace(' ', '+')
+        bot.say('Searching in the Babac catalog for: %s' % query)
+    else:
         return bot.reply('.babac what? Please specify your query. For example ".babac training wheels"')
         #return '.babac what? Please specify your query. For example ".babac training wheels"'
-    bot.say('Searching in the Babac catalog for: %s' % query)
-    #print('Searching in the Babac catalog for: %s' % query)
+        #print('Searching in the Babac catalog for: %s' % query)
 
     return query
 
@@ -56,7 +58,10 @@ def login(username, password):
 
 def search_item(br, query):
     url = "http://cyclebabac.com/"
-    search_url = url + '?s=' + query
+    if query != None:
+        search_url = url + '?s=' + query
+    else:
+        search_url = url
     search = br.open(search_url)
     searchpage = search.read()
     soupsearchpage = BeautifulSoup(searchpage, 'html.parser')
