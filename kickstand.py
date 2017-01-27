@@ -1,9 +1,10 @@
 import time
 import requests
 from bs4 import BeautifulSoup
-import sopel.module
+from sopel.module import commands, example
 
-@sopel.module.commands('kickstand')
+@commands('kickstand')
+@example('.kickstand')
 def kickstand(bot, trigger):
     comicbaseaddress = 'http://yehudamoon.com/comic/'
     today = time.strftime("%Y-%m-%d")
@@ -11,10 +12,7 @@ def kickstand(bot, trigger):
 
 # Check if there is a new comic strip today
     if request.status_code == 200:
-#        print('Web site exists')
         comicurl = comicbaseaddress + today + '/'
-# If yes, print the link
-#        print('The address is ' + comicurl)
 	bot.say('Nouveau Kickstand Comics:' + ' | ' + comicurl)
 
 # As of 2017-01-11, there is no title associated with the comic strip so I skipped that part.
@@ -28,4 +26,4 @@ def kickstand(bot, trigger):
 
 # If no, do nothing
     else:
-        bot.say('Pas de Kickstand Comics aujourd\'hui.') 
+        bot.say('Pas de Kickstand Comics aujourd\'hui.')
