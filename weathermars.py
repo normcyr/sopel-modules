@@ -3,11 +3,12 @@
 import sopel.module
 import json
 import urllib2
+from sopel.module import commands, example
 
 degree_sign= u'\N{DEGREE SIGN}'
 
-@sopel.module.commands('weathermars')
-
+@commands('weathermars')
+@example('.weathermars')
 def weathermars(bot, trigger):
     weather_url = 'http://marsweather.ingenology.com/v1/latest/?format=json'
     weather_data = urllib2.urlopen(weather_url)
