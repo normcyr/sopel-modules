@@ -26,7 +26,7 @@
 In a channel where the bot is present, enter the following command:
 
 ```
-.babac training wheels
+> .babac training wheels
 ```
 
 The output should looks like that:
