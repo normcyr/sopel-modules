@@ -42,7 +42,7 @@ The output should looks like that:
 
 # Future features
 
-- Nicier formatting of the output
+- <del>Nicier formatting of the output</del>
 - Everything running with Python3
   * Replace mechanize for another module
 - Have links to product pages within the product numbers output
