@@ -14,7 +14,7 @@ def get_query(bot, trigger):
     return query
 
 def load_config():
-    with open('config.yml') as ymlfile:
+    with open('/home/norm/.sopel/modules/config.yml') as ymlfile:
         cfg = yaml.load(ymlfile)
 
     username = cfg['login']['username']
@@ -62,10 +62,13 @@ def search_item(br, query):
 
 def print_results(bot, br, itemsfound):
     if len(itemsfound)>0:
-        bot.say('Returning %i items.' % len(itemsfound))
+        if 1 <= len(itemsfound) <= 10:
+            bot.say('Returning %i items.' % len(itemsfound))
+        elif len(itemsfound) > 10:
+            bot.say('I found a lot of items. Returning the first 10 items.')
         bot.say('#Babac | ' + 'Item name'.ljust(50, ' ') + ' | Price' )
         for itemname in itemsfound:
-            shortitemname = itemname.contents[1].string
+            shortitemname = itemname.contents[1].string[:50]
             for itemlink in itemname.find_all('a'):
                 itempage = br.open(itemlink.get('href'))
                 itempagetext = itempage.read()
@@ -75,7 +78,6 @@ def print_results(bot, br, itemsfound):
                 pricenumber = float(str(price[u'content']))
                 val = str('%.2f') % pricenumber
             bot.say(skushort + ' | ' + shortitemname.ljust(50, ' ') + ' | ' + val.rjust(6) + ' $')
-
     else:
         bot.say('No product found :(')
 
@@ -85,8 +87,9 @@ def babac(bot, trigger):
     query = get_query(bot, trigger)
 
     if query != None:
+        terms_searched = query
         query = query.replace(' ', '+')
-        bot.say('Searching in the Babac catalog for: %s' % query)
+        bot.say('Searching in the Babac catalog for: %s' % terms_searched)
     else:
         return bot.reply('.babac what? Please specify your query. For example ".babac training wheels"')
         exit(0)
