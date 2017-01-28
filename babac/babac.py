@@ -63,7 +63,7 @@ def search_item(br, query):
 def print_results(bot, br, itemsfound):
     if len(itemsfound)>0:
         bot.say('Returning %i items.' % len(itemsfound))
-        bot.say('#Babac | Item name and price' )
+        bot.say('#Babac | ' + 'Item name'.ljust(50, ' ') + ' | Price' )
         for itemname in itemsfound:
             shortitemname = itemname.contents[1].string
             for itemlink in itemname.find_all('a'):
@@ -73,7 +73,7 @@ def print_results(bot, br, itemsfound):
                 skushort = str(soupitempagetext.find_all('span', attrs={'class': 'sku'}))[34:40]
                 price = soupitempagetext.find('meta', itemprop='price')
                 pricenumber = float(str(price[u'content']))
-            bot.say(skushort + ' | ' + shortitemname + ' | ' + '%.2f'% (pricenumber) + '$')
+            bot.say(skushort + ' | ' + shortitemname.ljust(50, ' ') + ' | ' + '%.2f'% (pricenumber) + '$')
     else:
         bot.say('No product found :(')
 
