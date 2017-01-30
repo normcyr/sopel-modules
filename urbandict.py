@@ -1,10 +1,12 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 '''
 urbandict.py - urban dictionary module
+
 author: mutantmonkey <mutantmonkey@mutantmonkey.in>
 found here: https://github.com/dasu/syrup-sopel-modules
-lightly adapted for Becyk-Norm by Normand Cyr <normand.cyr@gmail.com>
+
+lightly adapted for Becyk-Norm by Norm1 <normand.cyr@gmail.com>
 '''
 
 from sopel import web

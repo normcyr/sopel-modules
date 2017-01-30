@@ -71,7 +71,7 @@ def print_results(bot, br, itemsfound):
             bot.say('Returning %i items.' % len(itemsfound))
         elif len(itemsfound) > 10:
             bot.say('I found a lot of items. Returning the first 10 items.')
-        bot.say('#Babac | ' + 'Item name'.ljust(50, ' ') + ' | Price' )
+        bot.say('#Babac | ' + 'Item name'.ljust(40, ' ') + ' | Price    | Availability' )
         for itemname in itemsfound:
             shortitemname = itemname.contents[1].string[:50]
             for itemlink in itemname.find_all('a'):
@@ -82,7 +82,13 @@ def print_results(bot, br, itemsfound):
                 price = soupitempagetext.find('meta', itemprop='price')
                 pricenumber = float(str(price[u'content']))
                 val = str('%.2f') % pricenumber
-            bot.say(skushort + ' | ' + shortitemname.ljust(50, ' ') + ' | ' + val.rjust(6) + ' $')
+                # command to check if product is out of stock
+                checkifstock = soupitempagetext.find('input', attrs={'class': 'input-text qty text'})
+                if checkifstock == None:
+                    isinstock = 'Out of stock'
+                else:
+                    isinstock = 'In stock'
+            bot.say(skushort + ' | ' + shortitemname.ljust(40, ' ') + ' | ' + val.rjust(6) + ' $' + ' | ' + isinstock)
     else:
         bot.say('No product found :(')
 

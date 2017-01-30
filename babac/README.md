@@ -45,5 +45,6 @@ The output should looks like that:
 - <del>Nicier formatting of the output</del>
 - Everything running with Python3
   * Replace mechanize for another module
+- <del>Specify when product is out of stock</del>
 - Have links to product pages within the product numbers output
 - If there are more than 10 items found, return how many items found and include instructions to get the list of all items found
