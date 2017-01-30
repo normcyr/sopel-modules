@@ -1,6 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+'''
+babac.py - sopel module to search the Cycle Babac catalog
+author: Norm1 <normand.cyr@gmail.com>
+'''
+
 from sopel.module import commands, example
 from sopel import web
 from bs4 import BeautifulSoup
@@ -84,6 +89,8 @@ def print_results(bot, br, itemsfound):
 @commands('babac')
 @example('.babac training wheels')
 def babac(bot, trigger):
+    '''.babac <item name> - Search Cycle Babac catalog for the item.'''
+
     query = get_query(bot, trigger)
 
     if query != None:
