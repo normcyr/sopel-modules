@@ -20,7 +20,7 @@ def get_query(bot, trigger):
     return query
 
 def load_config():
-    with open('config.yml') as ymlfile:
+    with open('/home/norm/.sopel/modules/config.yml') as ymlfile:
         cfg = yaml.load(ymlfile)
 
     username = cfg['login']['username']
@@ -54,8 +54,9 @@ def login(username, password):
     return br
 
 def search_item(br, query):
-    sku_pattern = string(re.compile("([0-9]){2}(-*)([0-9]){3}"))  # accept 12345 or 12-345 but not 123456 or 1234
+    sku_pattern = re.compile('\d{2}\-\d{3}')  # accept 12-345 but not 123456, 123456 or 1234
     url = "http://cyclebabac.com/"
+
     if query != None:
         search_url = url + '?s=' + query
     else:
@@ -63,37 +64,61 @@ def search_item(br, query):
     search = br.open(search_url)
     searchpage = search.read()
     soupsearchpage = BeautifulSoup(searchpage, 'html.parser')
-    if query.match(sku_pattern):
+    if sku_pattern.match(query):
+        query_type = 'sku_only'
         itemsfound = soupsearchpage.title
     else:
+        query_type = 'text'
         itemsfound = soupsearchpage.findAll(attrs={'class': 'itemTitle'})
 
-    return itemsfound
+    return itemsfound, query_type, query, url
 
-def print_results(bot, br, itemsfound):
+def print_results(bot, br, itemsfound, query_type, query, url):
     if len(itemsfound)>0:
-        if 1 <= len(itemsfound) <= 10:
-            bot.say('Returning %i items.' % len(itemsfound))
-        elif len(itemsfound) > 10:
-            bot.say('I found a lot of items. Returning the first 10 items.')
-        bot.say('#Babac | ' + 'Item name'.ljust(40, ' ') + ' | Price    | Availability' )
-        for itemname in itemsfound:
-            shortitemname = itemname.contents[1].string[:50]
-            for itemlink in itemname.find_all('a'):
-                itempage = br.open(itemlink.get('href'))
-                itempagetext = itempage.read()
-                soupitempagetext = BeautifulSoup(itempagetext, 'html.parser')
-                skushort = str(soupitempagetext.find_all('span', attrs={'class': 'sku'}))[34:40]
-                price = soupitempagetext.find('meta', itemprop='price')
-                pricenumber = float(str(price[u'content']))
-                val = str('%.2f') % pricenumber
-                # command to check if product is out of stock
-                checkifstock = soupitempagetext.find('input', attrs={'class': 'input-text qty text'})
-                if checkifstock == None:
-                    isinstock = 'Out of stock'
-                else:
-                    isinstock = 'In stock'
+        if query_type == 'sku_only':
+            sku = query
+            bot.say('You searched by product number, so I am returning a single item.')
+            bot.say('#Babac | ' + 'Item name'.ljust(40, ' ') + ' | Price    | Availability' )
+
+            result_url = url + '?s=' + sku
+            itempage = br.open(result_url)
+            itempagetext = itempage.read()
+            soupitempagetext = BeautifulSoup(itempagetext, 'html.parser')
+            shortitemname = itemsfound.text[13:63]
+            skushort = str(sku)
+            price = soupitempagetext.find('meta', itemprop='price')
+            pricenumber = float(str(price[u'content']))
+            val = str('%.2f') % pricenumber
+            # command to check if product is out of stock
+            checkifstock = soupitempagetext.find('input', attrs={'class': 'input-text qty text'})
+            if checkifstock == None:
+                isinstock = 'Out of stock'
+            else:
+                isinstock = 'In stock'
             bot.say(skushort + ' | ' + shortitemname.ljust(40, ' ') + ' | ' + val.rjust(6) + ' $' + ' | ' + isinstock)
+        else:
+            if 1 <= len(itemsfound) <= 10:
+                bot.say('Returning %i items.' % len(itemsfound))
+            elif len(itemsfound) > 10:
+                bot.say('I found a lot of items. Returning the first 10 items.')
+            bot.say('#Babac | ' + 'Item name'.ljust(40, ' ') + ' | Price    | Availability' )
+            for itemname in itemsfound:
+                shortitemname = itemname.contents[1].string[:50]
+                for itemlink in itemname.find_all('a'):
+                    itempage = br.open(itemlink.get('href'))
+                    itempagetext = itempage.read()
+                    soupitempagetext = BeautifulSoup(itempagetext, 'html.parser')
+                    skushort = str(soupitempagetext.find_all('span', attrs={'class': 'sku'}))[34:40]
+                    price = soupitempagetext.find('meta', itemprop='price')
+                    pricenumber = float(str(price[u'content']))
+                    val = str('%.2f') % pricenumber
+                    # command to check if product is out of stock
+                    checkifstock = soupitempagetext.find('input', attrs={'class': 'input-text qty text'})
+                    if checkifstock == None:
+                        isinstock = 'Out of stock'
+                    else:
+                        isinstock = 'In stock'
+                bot.say(skushort + ' | ' + shortitemname.ljust(40, ' ') + ' | ' + val.rjust(6) + ' $' + ' | ' + isinstock)
     else:
         bot.say('No product found :(')
 
@@ -114,5 +139,5 @@ def babac(bot, trigger):
 
     username, password = load_config()
     br = login(username, password)
-    itemsfound = search_item(br, query)
-    print_results(bot, br, itemsfound)
+    itemsfound, query_type, query, url = search_item(br, query)
+    print_results(bot, br, itemsfound, query_type, query, url)
