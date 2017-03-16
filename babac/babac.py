@@ -61,7 +61,10 @@ def search_item(br, query):
     search = br.open(search_url)
     searchpage = search.read()
     soupsearchpage = BeautifulSoup(searchpage, 'html.parser')
-    itemsfound = soupsearchpage.findAll(attrs={'class': 'itemTitle'})
+    if query.isalnum():
+        itemsfound = soupsearchpage.findAll(attrs={'class': 'itemTitle'})
+    else:
+        itemsfound = "Did you write only numbers?"
 
     return itemsfound
 
