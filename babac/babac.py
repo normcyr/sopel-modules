@@ -78,9 +78,6 @@ def print_results(bot, br, itemsfound, query_type, query, url):
     if len(itemsfound)>0:
         if query_type == 'sku_only':
             sku = query
-            bot.say('You searched by product number, so I am returning a single item.')
-            bot.say('#Babac | ' + 'Item name'.ljust(40, ' ') + ' | Price    | Availability' )
-
             result_url = url + '?s=' + sku
             itempage = br.open(result_url)
             itempagetext = itempage.read()
@@ -88,15 +85,19 @@ def print_results(bot, br, itemsfound, query_type, query, url):
             shortitemname = itemsfound.text[13:63]
             skushort = str(sku)
             price = soupitempagetext.find('meta', itemprop='price')
-            pricenumber = float(str(price[u'content']))
-            val = str('%.2f') % pricenumber
-            # command to check if product is out of stock
-            checkifstock = soupitempagetext.find('input', attrs={'class': 'input-text qty text'})
-            if checkifstock == None:
-                isinstock = 'Out of stock'
+            if price != None:
+                pricenumber = float(str(price[u'content']))
+                val = str('%.2f') % pricenumber
+                checkifstock = soupitempagetext.find('input', attrs={'class': 'input-text qty text'})
+                if checkifstock == None:
+                    isinstock = 'Out of stock'
+                else:
+                    isinstock = 'In stock'
+                bot.say('You searched by product number, so I am returning a single item.')
+                bot.say('#Babac | ' + 'Item name'.ljust(40, ' ') + ' | Price    | Availability' )
+                bot.say(skushort + ' | ' + shortitemname.ljust(40, ' ') + ' | ' + val.rjust(6) + ' $' + ' | ' + isinstock)
             else:
-                isinstock = 'In stock'
-            bot.say(skushort + ' | ' + shortitemname.ljust(40, ' ') + ' | ' + val.rjust(6) + ' $' + ' | ' + isinstock)
+                bot.say('No product found :(')
         else:
             if 1 <= len(itemsfound) <= 10:
                 bot.say('Returning %i items.' % len(itemsfound))
