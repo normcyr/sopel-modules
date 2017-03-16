@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 import cookielib
 import mechanize
 import yaml
+import re
 
 def get_query(bot, trigger):
     query = trigger.group(2)
@@ -53,6 +54,7 @@ def login(username, password):
     return br
 
 def search_item(br, query):
+    sku_pattern = re.compile("([0-9]){2}(-*)([0-9]){3}")  # accept 12345 or 12-345 but not 123456 or 1234
     url = "http://cyclebabac.com/"
     if query != None:
         search_url = url + '?s=' + query
@@ -61,10 +63,10 @@ def search_item(br, query):
     search = br.open(search_url)
     searchpage = search.read()
     soupsearchpage = BeautifulSoup(searchpage, 'html.parser')
-    if query.isalnum():
-        itemsfound = soupsearchpage.findAll(attrs={'class': 'itemTitle'})
+    if query.match(sku_pattern):
+        itemsfound = soupsearchpage.title
     else:
-        itemsfound = "Did you write only numbers?"
+        itemsfound = soupsearchpage.findAll(attrs={'class': 'itemTitle'})
 
     return itemsfound
 
