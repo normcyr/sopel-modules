@@ -54,7 +54,7 @@ def login(username, password):
     return br
 
 def search_item(br, query):
-    sku_pattern = re.compile("([0-9]){2}(-*)([0-9]){3}")  # accept 12345 or 12-345 but not 123456 or 1234
+    sku_pattern = string(re.compile("([0-9]){2}(-*)([0-9]){3}"))  # accept 12345 or 12-345 but not 123456 or 1234
     url = "http://cyclebabac.com/"
     if query != None:
         search_url = url + '?s=' + query
