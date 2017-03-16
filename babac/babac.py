@@ -54,7 +54,7 @@ def login(username, password):
     return br
 
 def search_item(br, query):
-    sku_pattern = re.compile('\d{2}\-\d{3}')  # accept 12-345 but not 123456, 123456 or 1234
+    sku_pattern = re.compile('^\d{2}\-*\d{3}$')  # accept 12-345 or 12345, but not 123456 or 1234
     url = "http://cyclebabac.com/"
 
     if query != None:
@@ -66,6 +66,7 @@ def search_item(br, query):
     soupsearchpage = BeautifulSoup(searchpage, 'html.parser')
     if sku_pattern.match(query):
         query_type = 'sku_only'
+        query = query[:2] + '-' + query[-3:]
         itemsfound = soupsearchpage.title
     else:
         query_type = 'text'

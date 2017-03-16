@@ -1,6 +1,6 @@
 .gitignore
 helloworld.py
-search.py
+.strava.py
 babac/config.yml
 babac/babac-test.py
 babac/babac-incomplete.py
