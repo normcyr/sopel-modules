@@ -14,6 +14,8 @@ import mechanize
 import yaml
 import re
 
+string LIST_HEADER = '#Babac\t' + 'Item name'.ljust(40, ' ') + '\tPrice ($)\tAvailability'
+
 def get_query(bot, trigger):
     query = trigger.group(2)
 
@@ -94,8 +96,8 @@ def print_results(bot, br, itemsfound, query_type, query, url):
                 else:
                     isinstock = 'In stock'
                 bot.say('You searched by product number, so I am returning a single item.')
-                bot.say('#Babac | ' + 'Item name'.ljust(40, ' ') + ' | Price    | Availability' )
-                bot.say(skushort + ' | ' + shortitemname.ljust(40, ' ') + ' | ' + val.rjust(6) + ' $' + ' | ' + isinstock)
+                bot.say(LIST_HEADER)
+                bot.say(skushort + '\t' + shortitemname.ljust(40, ' ') + '\t' + val.rjust(9) + '\t' + isinstock)
             else:
                 bot.say('No product found :(')
         else:
@@ -103,7 +105,7 @@ def print_results(bot, br, itemsfound, query_type, query, url):
                 bot.say('Returning %i items.' % len(itemsfound))
             elif len(itemsfound) > 10:
                 bot.say('I found a lot of items. Returning the first 10 items.')
-            bot.say('#Babac | ' + 'Item name'.ljust(40, ' ') + ' | Price    | Availability' )
+            bot.say(LIST_HEADER)
             for itemname in itemsfound:
                 shortitemname = itemname.contents[1].string[:50]
                 for itemlink in itemname.find_all('a'):
@@ -120,7 +122,7 @@ def print_results(bot, br, itemsfound, query_type, query, url):
                         isinstock = 'Out of stock'
                     else:
                         isinstock = 'In stock'
-                bot.say(skushort + ' | ' + shortitemname.ljust(40, ' ') + ' | ' + val.rjust(6) + ' $' + ' | ' + isinstock)
+                bot.say(skushort + '\t' + shortitemname.ljust(40, ' ') + '\t' + val.rjust(9) + '\t' + isinstock)
     else:
         bot.say('No product found :(')
 
