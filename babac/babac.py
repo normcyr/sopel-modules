@@ -14,12 +14,8 @@ import mechanize
 import yaml
 import re
 
-skushort = ''
-shortitemname = ''
-val = ''
-isinstock = ''
 LIST_HEADER = '#Babac\t' + 'Item name'.ljust(40, ' ') + '\tPrice ($)\tAvailability'
-RESULT = '{}\t{:<40}\t{}\t{}'.format(skushort, shortitemname, val, isinstock)
+#RESULT = '{}\t{:<40}\t{}\t{}'.format(skushort, shortitemname, val, isinstock)
 
 def get_query(bot, trigger):
     query = trigger.group(2)
@@ -102,6 +98,7 @@ def print_results(bot, br, itemsfound, query_type, query, url):
                     isinstock = 'In stock'
                 bot.say('You searched by product number, so I am returning a single item.')
                 bot.say(LIST_HEADER)
+                #bot.say(RESULT)
                 bot.say(skushort + '\t' + shortitemname.ljust(40, ' ') + '\t' + val.rjust(9) + '\t' + isinstock)
             else:
                 bot.say('No product found :(')
@@ -127,6 +124,7 @@ def print_results(bot, br, itemsfound, query_type, query, url):
                         isinstock = 'Out of stock'
                     else:
                         isinstock = 'In stock'
+                #bot.say(RESULT)
                 bot.say(skushort + '\t' + shortitemname.ljust(40, ' ') + '\t' + val.rjust(9) + '\t' + isinstock)
     else:
         bot.say('No product found :(')
@@ -141,7 +139,7 @@ def babac(bot, trigger):
     if query != None:
         terms_searched = query
         query = query.replace(' ', '+')
-        bot.say('Searching in the Babac catalog for: %s' % terms_searched)
+        bot.say('Searching in the Babac catalog for: {}'.format(terms_searched))
     else:
         return bot.reply('.babac what? Please specify your query. For example ".babac training wheels"')
         exit(0)
