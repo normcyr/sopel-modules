@@ -14,7 +14,7 @@ import mechanize
 import yaml
 import re
 
-string LIST_HEADER = '#Babac\t' + 'Item name'.ljust(40, ' ') + '\tPrice ($)\tAvailability'
+LIST_HEADER = '#Babac\t' + 'Item name'.ljust(40, ' ') + '\tPrice ($)\tAvailability'
 
 def get_query(bot, trigger):
     query = trigger.group(2)
