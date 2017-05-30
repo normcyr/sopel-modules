@@ -14,7 +14,12 @@ import mechanize
 import yaml
 import re
 
+skushort = ''
+shortitemname = ''
+val = ''
+isinstock = ''
 LIST_HEADER = '#Babac\t' + 'Item name'.ljust(40, ' ') + '\tPrice ($)\tAvailability'
+RESULT = '{}\t{:<40}\t{}\t{}'.format(skushort, textwrap.shorten(shortitemname, width=40), val, isinstock)
 
 def get_query(bot, trigger):
     query = trigger.group(2)
