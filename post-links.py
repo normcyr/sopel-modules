@@ -18,7 +18,7 @@ def checkRedditPost(botName, subredditText):
 
         subredditName = submission.subreddit_name_prefixed
         submissionTitle = submission.title
-        submissionURL = submission.url
+        submissionURL = submission.shortlink
 
     return(subredditName, submissionTitle, submissionURL)
 
