@@ -5,4 +5,5 @@ babac/config.yml
 babac/babac-test.py
 babac/babac-incomplete.py
 babac/babac-working.py
+babac/babac3-no-bot.py
 *.pyc
