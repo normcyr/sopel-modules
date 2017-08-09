@@ -2,16 +2,16 @@
 
 - Search for an item in the Babac catalog
 - Returns the first 10 items
+- Uses Python 3
 
 # Python requirements
 
 - sopel
-- bs4 (BeautifulSoup)
-- cookielib
-- mechanize
+- requests
+- http.cookiejar
+- mechanicalsoup
 - yaml
-
-*it currently only works with Python 2. cookielib and mechanize are specific to Python 2.*
+- re
 
 # Instructions
 
@@ -32,19 +32,19 @@ In a channel where the bot is present, enter the following command:
 The output should looks like that:
 
 ```
-> Searching in the Babac catalog for: training+wheels
+> Searching in the Babac catalog for: training wheels
 > Returning 3 items.
-> #Babac | Item name and price
-> 22-169 | Stabilizers & Trainers 16-24 | 20.00$
-> 22-155 | Wald Stabilizer 16 – 26″ | 40.00$
-> 22-150 | WALD Training Wheels | 35.00$
+> #Babac | Item name                      | Price   | Availability
+> 22-169 | Stabilizers & Trainers 16-24   | 20.00$  | in stock
+> 22-155 | Wald Stabilizer 16 – 26″       | 40.00$  | out of stock
+> 22-150 | WALD Training Wheels           | 35.00$  | in stock
 ```
 
 # Future features
 
-- <del>Nicier formatting of the output</del>
-- Everything running with Python3
-  * Replace mechanize for another module
-- <del>Specify when product is out of stock</del>
-- Have links to product pages within the product numbers output
 - If there are more than 10 items found, return how many items found and include instructions to get the list of all items found
+- Have links to product pages within the product numbers output
+- <del>Nicier formatting of the output</del>
+- <del>Everything running with Python3</del>
+  <del>Replace mechanize for another module</del>
+- <del>Specify when product is out of stock</del>
