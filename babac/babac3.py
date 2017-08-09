@@ -3,24 +3,25 @@
 '''
 babac.py - sopel module to search the Cycle Babac catalog
 author: Norm1 <normand.cyr@gmail.com>
-NEED TO COMPLETE TRANSITION TO PYTHON3
+now transitioned to Python3
 '''
 
 from sopel.module import commands, example
 from sopel import web
-from bs4 import BeautifulSoup
-import http.cookiejar as cookielib
-#import mechanize
+from http import cookiejar
 import mechanicalsoup
+import requests
 import yaml
 import re
 
 def get_query(bot, trigger):
+
     query = trigger.group(2)
 
     return query
 
 def load_config():
+
     with open('/home/norm/.sopel/modules/config.yml') as ymlfile:
         cfg = yaml.load(ymlfile)
 
@@ -30,42 +31,36 @@ def load_config():
     return username, password
 
 def login(username, password):
-    #br = mechanize.Browser()
-    br = mechanicalsoup.Browser()
-    login_url = "http://cyclebabac.com/wp-login.php"
 
     # Cookie Jar
-    cj = cookielib.LWPCookieJar()
-    br.set_cookiejar(cj)
+    cj = cookiejar.CookieJar()
+    s = requests.Session()
+    s.cookies = cj
 
-    # Follows refresh 0 but not hangs on refresh > 0
-    br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
-
-    # Want debugging messages? Uncomment this
-    #br.set_debug_http(True)
-    #br.set_debug_redirects(True)
-    #br.set_debug_responses(True)
+    br = mechanicalsoup.StatefulBrowser(soup_config={'features': 'lxml'}, session=s)
+    login_url = "http://cyclebabac.com/wp-login.php"
 
     # Perform the actual login
     br.open(login_url)
-    br.select_form(nr=0)
-    br.form['log'] = str(username)
-    br.form['pwd'] = str(password)
-    br.submit()
+    br.select_form('#loginform')
+    br['log'] = str(username)
+    br['pwd'] = str(password)
+    br.submit_selected()
 
     return br
 
 def search_item(br, query):
+
     sku_pattern = re.compile('^\d{2}\-*\d{3}$')  # accept 12-345 or 12345, but not 123456 or 1234
     url = "http://cyclebabac.com/"
-
+    print(query)
     if query != None:
         search_url = url + '?s=' + query
     else:
         search_url = url
     search = br.open(search_url)
-    searchpage = search.read()
-    soupsearchpage = BeautifulSoup(searchpage, 'html.parser')
+    soupsearchpage = br.get_current_page()
+
     if sku_pattern.match(query):
         query_type = 'sku_only'
         query = query[:2] + '-' + query[-3:]
@@ -73,17 +68,20 @@ def search_item(br, query):
     else:
         query_type = 'text'
         itemsfound = soupsearchpage.findAll(attrs={'class': 'itemTitle'})
+    print(len(itemsfound))
 
     return itemsfound, query_type, query, url
 
 def print_results(bot, br, itemsfound, query_type, query, url):
+
     if len(itemsfound)>0:
         if query_type == 'sku_only':
             sku = query
             result_url = url + '?s=' + sku
+
             itempage = br.open(result_url)
-            itempagetext = itempage.read()
-            soupitempagetext = BeautifulSoup(itempagetext, 'html.parser')
+            soupitempagetext = br.get_current_page()
+
             shortitemname = itemsfound.text[13:63]
             skushort = str(sku)
             price = soupitempagetext.find('meta', itemprop='price')
@@ -109,19 +107,22 @@ def print_results(bot, br, itemsfound, query_type, query, url):
             for itemname in itemsfound:
                 shortitemname = itemname.contents[1].string[:50]
                 for itemlink in itemname.find_all('a'):
+
                     itempage = br.open(itemlink.get('href'))
-                    itempagetext = itempage.read()
-                    soupitempagetext = BeautifulSoup(itempagetext, 'html.parser')
+                    soupitempagetext = br.get_current_page()
+
                     skushort = str(soupitempagetext.find_all('span', attrs={'class': 'sku'}))[34:40]
                     price = soupitempagetext.find('meta', itemprop='price')
                     pricenumber = float(str(price[u'content']))
                     val = str('%.2f') % pricenumber
+
                     # command to check if product is out of stock
                     checkifstock = soupitempagetext.find('input', attrs={'class': 'input-text qty text'})
                     if checkifstock == None:
                         isinstock = 'Out of stock'
                     else:
                         isinstock = 'In stock'
+
                 bot.say(skushort + ' | ' + shortitemname.ljust(40, ' ') + ' | ' + val.rjust(6) + ' $' + ' | ' + isinstock)
     else:
         bot.say('No product found :(')
@@ -129,6 +130,7 @@ def print_results(bot, br, itemsfound, query_type, query, url):
 @commands('babac')
 @example('.babac training wheels')
 def babac(bot, trigger):
+
     '''.babac <item name> - Search Cycle Babac catalog for the item.'''
 
     query = get_query(bot, trigger)
@@ -143,5 +145,6 @@ def babac(bot, trigger):
 
     username, password = load_config()
     br = login(username, password)
+    print('logged in')
     itemsfound, query_type, query, url = search_item(br, query)
     print_results(bot, br, itemsfound, query_type, query, url)
