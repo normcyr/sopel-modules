@@ -83,11 +83,12 @@ def print_results(bot, br, itemsfound, query_type, query, url):
             soupitempagetext = br.get_current_page()
 
             shortitemname = itemsfound.text[13:63]
-            skushort = str(sku)
-            price = soupitempagetext.find('meta', itemprop='price')
+            skushort = str(soupitempagetext.find_all('span', attrs={'class': 'sku'}))[19:25]
+            mentionnedItemPrice = soupitempagetext.find_all('span', attrs={'class': 'woocommerce-Price-amount amount'})
+            unformattedItemPrice = mentionnedItemPrice[1]
+            price = '{:.2f}'.format(float(str(unformattedItemPrice.text[1:])))
+            
             if price != None:
-                pricenumber = float(str(price[u'content']))
-                val = str('%.2f') % pricenumber
                 checkifstock = soupitempagetext.find('input', attrs={'class': 'input-text qty text'})
                 if checkifstock == None:
                     isinstock = 'Out of stock'
@@ -95,7 +96,7 @@ def print_results(bot, br, itemsfound, query_type, query, url):
                     isinstock = 'In stock'
                 bot.say('You searched by product number, so I am returning a single item.')
                 bot.say('#Babac | ' + 'Item name'.ljust(40, ' ') + ' | Price    | Availability' )
-                bot.say(skushort + ' | ' + shortitemname.ljust(40, ' ') + ' | ' + val.rjust(6) + ' $' + ' | ' + isinstock)
+                bot.say(skushort + ' | ' + shortitemname.ljust(40, ' ') + ' | ' + price.rjust(6) + ' $' + ' | ' + isinstock)
             else:
                 bot.say('No product found :(')
         else:
@@ -111,10 +112,10 @@ def print_results(bot, br, itemsfound, query_type, query, url):
                     itempage = br.open(itemlink.get('href'))
                     soupitempagetext = br.get_current_page()
 
-                    skushort = str(soupitempagetext.find_all('span', attrs={'class': 'sku'}))[34:40]
-                    price = soupitempagetext.find('meta', itemprop='price')
-                    pricenumber = float(str(price[u'content']))
-                    val = str('%.2f') % pricenumber
+                    skushort = str(soupitempagetext.find_all('span', attrs={'class': 'sku'}))[19:25]
+                    mentionnedItemPrice = soupitempagetext.find_all('span', attrs={'class': 'woocommerce-Price-amount amount'})
+                    unformattedItemPrice = mentionnedItemPrice[1]
+                    price = '{:.2f}'.format(float(str(unformattedItemPrice.text[1:])))
 
                     # command to check if product is out of stock
                     checkifstock = soupitempagetext.find('input', attrs={'class': 'input-text qty text'})
@@ -123,7 +124,7 @@ def print_results(bot, br, itemsfound, query_type, query, url):
                     else:
                         isinstock = 'In stock'
 
-                bot.say(skushort + ' | ' + shortitemname.ljust(40, ' ') + ' | ' + val.rjust(6) + ' $' + ' | ' + isinstock)
+                bot.say(skushort + ' | ' + shortitemname.ljust(40, ' ') + ' | ' + price.rjust(6) + ' $' + ' | ' + isinstock)
     else:
         bot.say('No product found :(')
 
