@@ -1,45 +1,58 @@
-import sopel.module
-import kudos as strava
+#!/usr/bin/python3
 
-@sopel.module.interval(600)
+'''
+strava.py - strava activity module
 
-def check_for_new_activities:
+author: Norm1 <normand.cyr@gmail.com>
+found here: https://github.com/normcyr/sopel-modules
+'''
 
-    new_activities = False
+import requests
+from bs4 import BeautifulSoup
+from sopel.module import commands, example
 
-    email, password, athlete_ids = strava.load_config()
-    browser, csrf_token, feed_page = strava.login_strava(email, password)
-    activities = strava.find_activities_from_feed_page(feed_page)
+def fetch_new_activity(url):
 
-    if activities != None:
-        new_activities = True
+    r = requests.get(url)
+    if r.status_code == 200:
+        return(r)
+    else:
+        print('URL error')
 
-    return new_activities
+def make_soup(r):
 
-def get_athlete_name(athlete_ids):
+    soup = BeautifulSoup(r.text, 'html.parser')
 
-    for athlete in athlete_ids:
-        athlete_url = urllib.request.Request(base_url + str(athlete), data=None, headers={'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0'})
-        athlete_page = urllib.request.urlopen(athlete_url)
-        soup = BeautifulSoup(athlete_page, parser)
-        athlete_name = soup.find('h1', attrs={'class': 'bottomless'}).get_text()
+    return(soup)
 
-    return athlete_name, athlete_fav_activity
+def retreive_activity_info(soup):
 
-def retreive_activity_info(new_activities):
+    athlete_name  = soup.find('h2', {'class': 'bottomless'}).text.strip()
+    activity_title = soup.find('div',  {'class': 'hgroup'}).text.strip()
+    activity_type = soup.find('div', {'class': 'activity-type-date'}).find('strong').text.strip()
+    activity_distance = soup.find('li', {'class': 'distance'}).find('strong').text.strip()
+    activity_info = {'Name': athlete_name, 'Title': activity_title, 'Type': activity_type, 'Distance': activity_distance}
 
-    athlene_name
-    activity_title
-    activity_type
-    activity_distance
+    return(activity_info)
 
-    return athlene_name, activity_title, activity_type, activity_distance
+@commands('strava')
+@example('.strava https://www.strava.com/activities/1474462480')
+def strava(bot, trigger):
+    '''.strava <activity_url> - Retreive the Strava data from an activity. This assumes that the activity is public.'''
 
-def publish_activity(bot, new_activities):
-    '''Publish the new activiy that appeared on Strava'''
+    url = trigger.group(2)
+    #url = 'https://www.strava.com/activities/1474462480'
 
-    retreive_activity_info()
+    try:
+        r = fetch_new_activity(url)
+        soup = make_soup(r)
+        activity_info = retreive_activity_info(soup)
 
-    if new_activities = True:
-        if '#test_sopel_norm' in bot.channels:
-            bot.msg('#test_sopel_norm', "Activité terminée!")
+        bot.say('{} just did a {} {}.'.format(activity_info['Name'], activity_info['Distance'], activity_info['Type']))
+        #print('{} just did a {} {}.'.format(activity_info['Name'], activity_info['Distance'], activity_info['Type']))
+
+    except:
+        return bot.say("No URL given")
+
+#if __name__ == '__main__':
+    #strava()
