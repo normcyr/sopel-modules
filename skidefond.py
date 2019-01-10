@@ -13,6 +13,7 @@ Description du fichier ici: http://donnees.ville.montreal.qc.ca/dataset/conditio
 Source XML: http://www2.ville.montreal.qc.ca/services_citoyens/pdf_transfert/L29_PISTE_SKI.xml'
 
 À faire:
+* possibilité de donner le nom du parc au lieu du numéro
 * présenter les accumulations de neige etc.
 * implémenter les conditions de ski et sentiers en arrondissements (peut-être)
 '''
@@ -20,6 +21,7 @@ Source XML: http://www2.ville.montreal.qc.ca/services_citoyens/pdf_transfert/L29
 import requests
 from bs4 import BeautifulSoup
 from sopel.module import commands, example
+
 
 def faire_requete_test(fichier_test):
 
@@ -50,6 +52,7 @@ def faire_soupe(texte_xml):
 
     return(soupe)
 
+
 def extraire_info_parc(infos_parc):
 
     nom_parc = infos_parc.find('nom_fr').text
@@ -69,7 +72,6 @@ def donner_reponse(reponse):
 
 @commands('skidefond')
 @example('.skidefond 6')
-
 def main(bot, trigger):
     '''.skidefond <numéro du parc> - Donne les conditions de ski de fond d'un Parc-Nature de Montréal.'''
 #def main():
