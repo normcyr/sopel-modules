@@ -1,9 +1,8 @@
-.gitignore
+#.gitignore
 helloworld.py
 strava2.py
-babac/config.yml
-babac/babac-test.py
-babac/babac-incomplete.py
-babac/babac-working.py
-babac/babac3-no-bot.py
+babac/*
 *.pyc
+*.ipynb
+*.xml
+venv

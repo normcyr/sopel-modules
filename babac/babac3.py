@@ -37,7 +37,7 @@ def login(username, password):
     s = requests.Session()
     s.cookies = cj
 
-    br = mechanicalsoup.StatefulBrowser(soup_config={'features': 'lxml'}, session=s)
+    br = mechanicalsoup.StatefulBrowser(soup_config={'features': 'lxml'}, session=s, raise_on_404=True)
     login_url = "http://cyclebabac.com/wp-login.php"
 
     # Perform the actual login
@@ -87,7 +87,7 @@ def print_results(bot, br, itemsfound, query_type, query, url):
             mentionnedItemPrice = soupitempagetext.find_all('span', attrs={'class': 'woocommerce-Price-amount amount'})
             unformattedItemPrice = mentionnedItemPrice[1]
             price = '{:.2f}'.format(float(str(unformattedItemPrice.text[1:])))
-            
+
             if price != None:
                 checkifstock = soupitempagetext.find('input', attrs={'class': 'input-text qty text'})
                 if checkifstock == None:
@@ -113,9 +113,10 @@ def print_results(bot, br, itemsfound, query_type, query, url):
                     soupitempagetext = br.get_current_page()
 
                     skushort = str(soupitempagetext.find_all('span', attrs={'class': 'sku'}))[19:25]
+
                     mentionnedItemPrice = soupitempagetext.find_all('span', attrs={'class': 'woocommerce-Price-amount amount'})
                     unformattedItemPrice = mentionnedItemPrice[1]
-                    price = '{:.2f}'.format(float(str(unformattedItemPrice.text[1:])))
+                    price = '{:.2f}'.format(float(str(unformattedItemPrice.text[2:])))
 
                     # command to check if product is out of stock
                     checkifstock = soupitempagetext.find('input', attrs={'class': 'input-text qty text'})
