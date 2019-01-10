@@ -13,7 +13,7 @@ Description du fichier ici: http://donnees.ville.montreal.qc.ca/dataset/conditio
 Source XML: http://www2.ville.montreal.qc.ca/services_citoyens/pdf_transfert/L29_PISTE_SKI.xml'
 
 À faire:
-* faire choisir le parc
+* présenter les accumulations de neige etc.
 * implémenter les conditions de ski et sentiers en arrondissements (peut-être)
 '''
 
@@ -50,12 +50,12 @@ def faire_soupe(texte_xml):
 
     return(soupe)
 
-def extraire_info_parc(parc_individuel):
+def extraire_info_parc(infos_parc):
 
-    nom_parc = parc_individuel.find('nom_fr').text
-    date_maj = parc_individuel.find('date_maj').text
-    pourcentage_trace = parc_individuel.find('ski_piste_tracees_pourcent').text
-    etat_conditions = parc_individuel.find('etat').text
+    nom_parc = infos_parc.find('nom_fr').text
+    date_maj = infos_parc.find('date_maj').text
+    pourcentage_trace = infos_parc.find('ski_piste_tracees_pourcent').text
+    etat_conditions = infos_parc.find('etat_general').find('ski').find('etat').text
 
     reponse = {'nom parc': nom_parc, 'date de mise à jour': date_maj, 'pourcentage tracé': pourcentage_trace, 'état des conditions': etat_conditions}
 
@@ -68,23 +68,30 @@ def donner_reponse(reponse):
 
 
 @commands('skidefond')
+@example('.skidefond 1')
+
 def main(bot, trigger):
+    '''.skidefond <numéro du parc> - Donne les conditions de ski de fond d'un Parc-Nature de Montréal.'''
 #def main():
 
     # fichier XML pour tester
     # fichier_test = 'conditions_neige.xml'
     # texte_xml = faire_requete_test(fichier_test)
+    # no_parc = '6' # Mont-Royal
 
     url_base = 'http://montreal2.qc.ca/ski/donnees/conditions_neige.xml'
     texte_xml = faire_requete(url_base)
-
     soupe = faire_soupe(texte_xml)
 
-    info_parcs = soupe.find_all('parc', {'id': '6'})
-    for parc_individuel in info_parcs:
-        reponse = extraire_info_parc(parc_individuel)
-        #donner_reponse(reponse)
-        bot.say('{}: tracé à {}%.'.format(reponse['nom parc'], reponse['pourcentage tracé']))
+    no_parc = trigger.group(2)
+    if not no_parc:
+        bot.say('J\'ai besoin d\'un numéro de parc pour vous aider. Par exemple: .skidefond 6 pour les conditions au Mont-Royal')
+        return(bot.say('Index: 1=Bois-de-Liesse, 2=Île-Bizard, 3=Cap-Saint-Jacques, 4=Île-de-la-Visitation, 5=Pointe-aux-Prairies, 6=Mont-Royal'))
+
+    infos_parc = soupe.find('parc', {'id': no_parc})
+    reponse = extraire_info_parc(infos_parc)
+    #donner_reponse(reponse)
+    bot.say('{}: tracé à {}%, {}. Mis à jour {}'.format(reponse['nom parc'], reponse['pourcentage tracé'], reponse['état des conditions'], reponse['date de mise à jour']))
 
 
 if __name__ == '__main__':
