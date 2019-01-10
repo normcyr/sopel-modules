@@ -68,7 +68,7 @@ def donner_reponse(reponse):
 
 
 @commands('skidefond')
-@example('.skidefond 1')
+@example('.skidefond 6')
 
 def main(bot, trigger):
     '''.skidefond <numéro du parc> - Donne les conditions de ski de fond d'un Parc-Nature de Montréal.'''
