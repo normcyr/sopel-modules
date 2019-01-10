@@ -84,7 +84,7 @@ def main(bot, trigger):
     for parc_individuel in info_parcs:
         reponse = extraire_info_parc(parc_individuel)
         #donner_reponse(reponse)
-        bot.say('{}: tracé à {}%.'.format(reponse['nom parc'], reponse['pourcentage_trace']))
+        bot.say('{}: tracé à {}%.'.format(reponse['nom parc'], reponse['pourcentage tracé']))
 
 
 if __name__ == '__main__':
